@@ -1,0 +1,214 @@
+---
+# Zabbix version
+zabbix_proxy_version:
+zabbix_proxy_minor_version: 
+zabbix_proxy_package_db:
+
+# Zabbix proxy Connection on Zabbix Server
+zabbix_proxy_server:
+  - 127.0.0.1
+  - 127.0.0.1
+
+# Zabbix Official Repository
+zabbix_yum_baseurl: http://repo.zabbix.com/zabbix/{{ zabbix_proxy_version }}/rhel/{{ ansible_distribution_major_version }}/$basearch/
+
+# Zabbix packages
+zabbix_proxy_packages:
+  - zabbix-proxy-{{ zabbix_proxy_package_db }}-{{ zabbix_proxy_version }}{{ zabbix_proxy_minor_version }}
+
+# Zabbix Proxy Database variables
+zabbix_proxy_db_type: sqlite
+zabbix_proxy_db_dir: /data/zabbix
+zabbix_proxy_dbname: 
+
+#Zabbix Proxy SNMP Dependencies and Settings
+zabbix_proxy_snmptrapperfile: /tmp/zabbix_traps.tmp
+zabbix_proxy_snmp_community: zabbix
+zabbix_proxy_snmp_user: zabbix
+zabbix_proxy_snmp_pass: zabbixzabbix
+zabbix_proxy_snmp_engineid: 0x0102030405
+
+# Zabbix Proxy Services
+zabbix_proxy_services:
+  - zabbix-proxy
+zabbix_proxy_service_status: started
+zabbix_proxy_service_enabled: true
+
+#API Settings
+zabbix_api_url: #zabbix frontpage url
+zabbix_api_login_user: "{{ vault_zabbix_api_user | d(lookup('env','ZABBIX_API_USER')) }}"
+zabbix_api_password: "{{ vault_zabbix_api_password | d(lookup('env','ZABBIX_API_PASSWORD')) }}"
+zabbix_api_proxy_description: "This is the Zabbix Proxy {{ inventory_hostname | lower }}."
+zabbix_api_proxy_status: active
+zabbix_api_proxy_state: present
+
+
+############ ZABBIX CONFIG FILE VARIABLES ############
+
+############ GENERAL PARAMETERS #################
+####### SERVICE PARAMETERS #######
+zabbix_service_conf:
+    ProxyMode: 0 #0 - active mode / 1 - passive mode
+    Server: "{{zabbix_proxy_server[0]}};{{zabbix_proxy_server[1]}}"
+    Hostname: "{{ ansible_nodename | lower }}"
+    #HostnameItem: "{{ ansible_nodename | lower }}"
+    #ListenPort: 10051
+
+######## LOG PARAMETERS #########
+zabbix_log_conf:
+    #LogType: file
+    LogFile: /var/log/zabbix/zabbix_proxy.log
+    LogFileSize: 0
+    PidFile: /var/run/zabbix/zabbix_proxy.pid
+    SocketDir: /run/zabbix
+    DebugLevel: 3
+    #EnableRemoteCommands: 0
+    #LogRemoteCommands: 0
+
+###### DATABASE PARAMETERS ######
+zabbix_database_conf:
+    #DBHost: localhost
+    DBName: "{{zabbix_proxy_db_dir}}/{{zabbix_proxy_dbname}}"
+    #DBSchema: 
+    DBUser: zabbix
+    #DBPassword: 
+    #DBSocket: 
+    #DBPort: 
+    #AllowUnsupportedDBVersions: 0
+
+############ ADVANCED PARAMETERS ################
+
+
+###### PROXY BUFFER PARAMETERS #######
+zabbix_buffer_enable: true # true is default
+
+zabbix_buffer_conf:
+    ProxyLocalBuffer: 0
+    ProxyOfflineBuffer: 1
+    HeartbeatFrequency: 60
+    ConfigFrequency: 300
+    DataSenderFrequency: 1
+
+###### STARTPOOLERS PARAMETERS #######
+zabbix_pollers_enable: true # true is default
+
+zabbix_pollers_conf:
+    StartPollers: 5
+    StartIPMIPollers: 0
+    StartPreprocessors: 3
+    StartPollersUnreachable: 1
+    StartHistoryPollers: 1
+    StartTrappers: 5
+    StartPingers: 1
+    StartDiscoverers: 1
+    StartHTTPPollers: 1
+    StartODBCPollers: 1
+
+###### JAVA PARAMETERS #######
+zabbix_java_enable: false # false is default
+
+zabbix_java_config:
+    JavaGateway: 
+    JavaGatewayPort: 10052
+    StartJavaPollers: 0
+
+###### VMWARE PARAMETERS ######
+zabbix_vmware_enable: true # true is default
+
+zabbix_vmware_conf:
+    StartVMwareCollectors: 0
+    VMwareFrequency: 60
+    VMwarePerfFrequency: 60
+    VMwareCacheSize: 8M
+    VMwareTimeout: 300
+
+####### SNMP TRAPPER PARAMETERS #######
+zabbix_snmp_trapper_enable: true # true is default
+
+zabbix_snmp_trapper_conf:
+    SNMPTrapperFile: "{{ zabbix_proxy_snmptrapperfile }}"
+    StartSNMPTrapper: 0
+    ListenIP: 0.0.0.0
+
+
+####### HISTORY/CACHE PARAMETERS #######
+zabbix_history_cache_conf:
+    CacheSize: 8M
+    HistoryCacheSize: 16M
+    HistoryIndexCacheSize: 4M
+    StartDBSyncers: 4
+    Timeout: 4
+    TrapperTimeout: 300
+    LogSlowQueries: 60
+    UnreachablePeriod: 45
+    UnavailableDelay: 60
+    UnreachableDelay: 15
+
+
+####### SCRIPTS/FPING PARAMETERS #######
+zabbix_script_fping_conf:
+    ExternalScripts: /usr/lib/zabbix/externalscripts
+    FpingLocation: /usr/sbin/fping
+    Fping6Location: /usr/sbin/fping6
+
+###### SSL PARAMETERS #######
+zabbix_ssl_enable: false # false is default
+
+zabbix_ssl_conf:
+    SSHKeyLocation: 
+    LogSlowQueries: 3000
+    TmpDir: /tmp
+    AllowRoot: 0
+    User: zabbix
+    Include: 
+    SSLCertLocation: ${datadir}/zabbix/ssl/certs
+    SSLCALocation: 
+
+####### LOADABLE MODULES #######
+zabbix_loadable_modules_enable: false # false is default
+
+zabbix_loadable_modules_conf:
+    LoadModulePath: 
+    LoadModule: 
+    StatsAllowedIP: 127.0.0.1
+
+####### TLS-RELATED PARAMETERS #######
+zabbix_tls_enable: false # false is default
+
+zabbix_tls_conf:
+    TLSConnect: 
+    TLSAccept: 
+    TLSCAFile: 
+    TLSCRLFile:
+    TLSServerCertIssuer: 
+    TLSServerCertSubject: 
+    TLSCertFile: 
+    TLSKeyFile: 
+    TLSPSKIdentity: 
+    TLSPSKFile: 
+
+####### For advanced users - TLS ciphersuite selection criteria #######
+zabbix_tls_advanced_enable: false # false is default
+
+zabbix_tls_advanced_conf:
+    TLSCipherCert13: 
+    TLSCipherCert:
+    TLSCipherPSK13:
+    TLSCipherPSK:
+    TLSCipherAll13:
+    TLSCipherAll:
+    DBTLSConnect: 
+    DBTLSCAFile: 
+    DBTLSCertFile:
+    DBTLSKeyFile:
+    DBTLSCipher:
+    DBTLSCipher13:
+    VaultToken:
+    VaultURL:
+    VaultDBPath: 
+
+####### For advanced users - TCP-related fine-tuning parameters #######
+zabbix_tcp_advanced_enable: false # false is default
+
+zabbix_tcp_advanced_conf:
+    ListenBacklog:
