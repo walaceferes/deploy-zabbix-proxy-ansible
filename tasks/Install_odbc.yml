@@ -1,0 +1,48 @@
+---
+- name: MSSQL ODBC | Add Microsoft yum repository 
+  yum_repository:
+    name: mssql-release
+    description: Microsoft SQL Client Release
+    baseurl: https://packages.microsoft.com/{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}/prod/
+    gpgcheck: yes
+    enabled: Yes
+  when: ansible_os_family == "RedHat"
+  tags: mssql
+
+- name: MSSQL ODBC | Install Microsoft GPG Key
+  rpm_key:
+    state: present
+    key: https://packages.microsoft.com/keys/microsoft.asc
+  when: ansible_os_family == "RedHat"
+  tags: mssql
+
+- name: MSSQL ODBC | Install Package
+  package: 
+    name: "{{ mssql_odbc_package }}"
+    state: present
+  environment:
+    ACCEPT_EULA: Y 
+  tags: mssql  
+
+- name: Oracle ODBC | Install Package
+  yum: 
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ oracle_odbc_basic }} "
+    - "{{ oracle_odbc_package }} "
+  tags: oracle_odbc
+
+- name: Configure Zabbix for Oracle ENV Usage
+  template:
+    src: zabbix_proxy_variables.j2
+    dest: "/etc/sysconfig/zabbix-proxy"
+
+- name: Configure odbcinst.ini
+  template:
+    src: odbcinst.ini.j2
+    dest: /etc/odbcinst.ini
+    owner: root
+    group: root
+    mode: 0644
+  tags: odbcinst 
