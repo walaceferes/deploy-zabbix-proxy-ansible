@@ -1,0 +1,94 @@
+---
+## Enabled Repositories
+
+- block:
+  - name: adds zabbix repository
+    yum_repository:
+      file: zabbix
+      name: zabbix
+      description: Zabbix Official Repository
+      baseurl: "{{ zabbix_yum_baseurl }}"
+      gpgcheck: true
+      enabled: true
+      state: present
+
+  - name: adds zabbix non-supported repository
+    yum_repository:
+      file: zabbix
+      name: zabbix-non-supported
+      description: Zabbix Non-Supported Repository
+      baseurl: "{{ zabbix_yum_ns_baseurl }}"
+      gpgcheck: true
+      enabled: true
+      state: present  
+  when: zabbix_rhsm_repository is not defined
+
+- name: enable repository
+  rhsm_repository:
+    name: "{{ item }}"
+    state: enabled
+  with_items: "{{ zabbix_rhsm_repository }}"
+  when: zabbix_rhsm_repository is defined and ansible_distribution == 'Red Hat'
+
+## Install Packages
+
+- name: installs zabbix proxy
+  yum:
+    pkg: "{{ item }}"
+    state: present
+  with_items: "{{ zabbix_proxy_packages }}"
+
+## Setup Sqlite3
+
+- name: create Directory to store sqlite3 db
+  file:
+    path: "{{zabbix_proxy_db_dir}}"
+    state: directory
+    owner: zabbix
+    group: zabbix
+    mode: 0744
+    recurse: yes
+
+## Copy Files Zabbix Proxy
+
+- name: copy zabbix proxy config file
+  template:
+    src: zabbix_proxy.conf.j2
+    dest: /etc/zabbix/zabbix_proxy.conf
+    owner: zabbix
+    group: zabbix
+    mode: 0744
+    backup: true
+
+- name: Create directory for PID file
+  file:
+    path: /run/zabbix/
+    state: directory
+    mode: 0744
+    recurse: yes
+
+## Setup Zabbix Proxy Dependencies
+
+# Services Settings
+
+- name: ensure service state
+  service:
+    name: "{{ item }}"
+    state: "{{ zabbix_proxy_service_state | default('started') }}"
+    enabled: "{{ zabbix_proxy_service_enabled | default('true') }}"
+  with_items: "{{ zabbix_proxy_services }}"
+
+# Set proxy in Zabbix GUI
+
+- name: Create or update a proxy with proxy type active
+  become: false
+  local_action:
+    module: community.zabbix.zabbix_proxy
+    server_url: "{{ zabbix_api_url }}"
+    login_user: "{{ zabbix_api_login_user }}"
+    login_password: "{{ zabbix_api_password }}"
+    proxy_name: "{{ inventory_hostname }}"
+    description: "{{ zabbix_api_proxy_description }}"
+    status: "{{ zabbix_api_proxy_status }}"
+    state: "{{ zabbix_api_proxy_state }}"
+    proxy_address: "{{ inventory_hostname }}"

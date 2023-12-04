@@ -1,0 +1,108 @@
+############ GENERAL PARAMETERS #################
+#
+####### SERVICE PARAMETERS #######
+{% for key,value in zabbix_service_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+
+######## LOG PARAMETERS #########
+{% for key,value in zabbix_log_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+
+####### DATABASE PARAMETERS #######
+{% for key,value in zabbix_database_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+
+############ ADVANCED PARAMETERS ################
+#
+###### PROXY BUFFER PARAMETERS #######
+{% if  zabbix_buffer_enable == true  %}
+{% for key,value in zabbix_buffer_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+{% else %}
+{% endif -%}
+
+###### STARTPOOLERS PARAMETERS #######
+{% if  zabbix_pollers_enable == true  %}
+{% for key,value in zabbix_pollers_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+{% else %}
+{% endif -%}
+
+###### JAVA PARAMETERS #######
+{% if zabbix_java_enable == true  %}
+{% for key,value in zabbix_java_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+{% else %}
+{% endif -%}
+
+###### VMWARE PARAMETERS ######
+{% if zabbix_vmware_enable == true  %}
+{% for key,value in zabbix_vmware_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+{% else %}
+{% endif -%}
+
+####### SNMP TRAPPER PARAMETERS #######
+{% if zabbix_snmp_trapper_enable == true  %}
+{% for key,value in zabbix_snmp_trapper_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+{% else %}
+{% endif -%}
+
+####### HISTORY/CACHE PARAMETERS #######
+{% for key,value in zabbix_history_cache_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+
+### SCRIPTS/FPING PARAMETERS #####
+{% for key,value in zabbix_script_fping_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+
+###### SSL PARAMETERS #######
+{% if zabbix_ssl_enable == true  %}
+{% for key,value in zabbix_ssl_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+{% else %}
+{% endif -%}
+
+####### LOADABLE MODULES #######
+{% if zabbix_loadable_modules_enable == true  %}
+{% for key,value in zabbix_loadable_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+{% else %}
+{% endif -%}
+
+####### TLS-RELATED PARAMETERS #######
+{% if zabbix_tls_enable == true  %}
+{% for key,value in zabbix_tls_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+{% else %}
+{% endif -%}
+
+####### For advanced users - TLS ciphersuite selection criteria #######
+{% if zabbix_tls_advanced_enable == true  %}
+{% for key,value in zabbix_tls_advanced_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+{% else %}
+{% endif -%}
+
+####### For advanced users - TCP-related fine-tuning parameters #######
+{% if zabbix_tcp_advanced_enable == true  %}
+{% for key,value in zabbix_tcp_advanced_conf.items() -%}
+{{ key + '=' + value|string }}
+{% endfor %}
+{% else %}
+{% endif -%}

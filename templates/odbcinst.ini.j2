@@ -1,0 +1,29 @@
+[PostgreSQL]
+Description=ODBC for PostgreSQL
+Driver=/usr/lib/psqlodbcw.so
+Setup=/usr/lib/libodbcpsqlS.so
+Driver64=/usr/lib64/psqlodbcw.so
+Setup64=/usr/lib64/libodbcpsqlS.so
+FileUsage=1
+
+[MySQL]
+Description=ODBC for MySQL
+Driver=/usr/lib/libmyodbc5.so
+Setup=/usr/lib/libodbcmyS.so
+Driver64=/usr/lib64/libmyodbc5.so
+Setup64=/usr/lib64/libodbcmyS.so
+FileUsage=1
+
+[MSSQL]
+Description=Microsoft ODBC Driver for SQL Server
+Driver=/opt/microsoft/{{ mssql_odbc_package }}/lib64/libmsodbcsql-{{ mssql_odbc_package_version}}.6.so.1.1
+UsageCount=1
+Trace = Yes
+TraceFile = /var/log/odbc/mssql.log
+
+[Oracle]
+Description=Oracle Unicode driver
+Driver=/usr/lib/oracle/{{ oracle_odbc_version }}/client64/lib/libsqora.so.12.1
+UsageCount=1
+FileUsage=1
+TraceFile = /var/log/odbc/oracle.log

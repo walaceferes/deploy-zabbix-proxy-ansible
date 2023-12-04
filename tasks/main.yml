@@ -1,0 +1,4 @@
+---
+- name: run tasks for rhel
+  include_tasks: main_rhel.yml
+  when: ansible_os_family == "RedHat"
